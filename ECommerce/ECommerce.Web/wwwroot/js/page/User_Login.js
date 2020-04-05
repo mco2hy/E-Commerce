@@ -1,5 +1,5 @@
 ﻿var User_Login = {
-    Init: function () {},
+    Init: function () { },
     Login: {
         Login: function () {
             var email = $("#user-login-email").val();
@@ -36,11 +36,11 @@
             var password2 = $("#user-register-password2").val();
 
             if (password != password2) {
-                Helper.UI.Alert("Hata!", "Girdiğiniz şifreler uyuşmuyor", "error");
+                Helper.UI.Alert("Hata!", "Şifreler birbiriyle uyuşmuyor!", "error")
             }
-            //else if (!Helper.MailCheck(email)) {
-            //    Helper.UI.Alert("Hata!", "Lütfen geçerli bir email giriniz.", "error");
-            //} 
+            else if (!Helper.MailCheck(email)) {
+                Helper.UI.Alert("Hata!", "Lütfen geçerli bir email giriniz.", "error")
+            } 
             else {
                 var data = { Name: name, Surname: surname, Email: email, Password: password };
 
@@ -66,4 +66,4 @@
             Helper.UI.Alert("Hata Oluştu", result.responseText, "error");
         }
     }
-}
+};
