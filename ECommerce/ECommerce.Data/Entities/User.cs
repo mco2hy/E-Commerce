@@ -16,6 +16,9 @@ namespace ECommerce.Data.Entities
         [Required, MaxLength(350), MinLength(6)]
         public String Email { get; set; }
 
+        [Required]
+        public bool EmailVerified { get; set; }
+
         [Required, MaxLength(40), MinLength(40)]
         public String Password { get; set; }
 
