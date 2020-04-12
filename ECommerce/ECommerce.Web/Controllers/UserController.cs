@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ECommerce.Data.DTO;
 using ECommerce.Data.Entities;
+using ECommerce.Data.Enum;
 using ECommerce.Data.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +22,7 @@ namespace ECommerce.Web.Controllers
         {
             return View();
         }
-        public IActionResult LoginAction([FromBody]Data.DTOs.User_LoginAction_Request user_LoginAction_Request)
+        public IActionResult LoginAction([FromBody]Data.DTO.User_LoginAction_Request user_LoginAction_Request)
         {
             if (!ModelState.IsValid)
             {
@@ -31,7 +33,19 @@ namespace ECommerce.Web.Controllers
             
             if (user == null)
             {
-                return Unauthorized();
+                return BadRequest("E-posta veya şifre hatalı.");
+            }
+            else if (!user.EmailVerified)
+            {
+                return BadRequest("E-posta onayı sağlanmamış.");
+            }
+            else if (user.Deleted)
+            {
+                return BadRequest("Hesabınız kapatılmış.");
+            }
+            else if (!user.Active)
+            {
+                return BadRequest("Hesabınız dondurulmuş.");
             }
             else
             {
@@ -65,7 +79,7 @@ namespace ECommerce.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult RegisterAction([FromBody]Data.DTOs.User_RegisterAction_Request dto)
+        public IActionResult RegisterAction([FromBody]Data.DTO.User_RegisterAction_Request dto)
         {
 
             if (!ModelState.IsValid)
@@ -88,14 +102,15 @@ namespace ECommerce.Web.Controllers
             Surname = dto.Surname,
             Email = dto.Email,
             Password = Helper.CryptoHelper.Sha1(dto.Password),
-            TitleId = (int)Data.Enums.UserTitle.Customer
+            TitleId = (int)Data.Enum.UserTitle.Customer
              };
 
             _unitOfWork.UserRepository.Insert(user);
 
             _unitOfWork.Complete();
 
-            string validationLink = "https://localhost:8080/email-verify/" + user.Id + "/" + Helper.CryptoHelper.Sha1(user.Id.ToString());
+            string validationLink = Data.Singletons.AppSettingsDto.AppSetting.WebSite + "/email-verify/" +
+                                    user.Id + "/" + Helper.CryptoHelper.Sha1(user.Id.ToString());
 
             _unitOfWork.OutgoingEmailRepository.Insert(new OutgoingEmail()
             {
@@ -114,6 +129,7 @@ namespace ECommerce.Web.Controllers
         [Route("/email-verify/{id:int}/{authKey}")]
         public IActionResult VerifyEmail(int id, string authKey)
         {
+            Data.DTO.Message_Response messageResponse = new Message_Response();
             var authKeyChipper = Helper.CryptoHelper.Sha1(id.ToString());
 
             if (authKey == authKeyChipper)
@@ -123,14 +139,22 @@ namespace ECommerce.Web.Controllers
                 {
                     user.EmailVerified = true;
                     _unitOfWork.Complete();
+                    messageResponse.MessageType = MessageType.Success;
+                    messageResponse.Message = "E-posta doğrulama işlemi başarılı. Şimdi giriş yapabilirsiniz.";
+                }
+                else
+                {
+                    messageResponse.MessageType = MessageType.Danger;
+                    messageResponse.Message = "Doğrulamak istediğiniz hesap sistemde kayıtlı değil.";
                 }
             }
             else
             {
-                 //başarısız
+                messageResponse.MessageType = MessageType.Danger;
+                messageResponse.Message = "Doğrulama kodu hatalı. Sistem yöneticisi ile irtibata geçebilirsiniz.";
             }
 
-            return View();
+            return View(messageResponse);
         }
     }
 }
