@@ -10,6 +10,7 @@ namespace ECommerce.Service
     {
         public IUserRepository UserRepository { get; set; }
         public IOutgoingEmailRepository OutgoingEmailRepository { get; set; }
+        public ICategoryRepository CategoryRepository { get; set; }
         private readonly DataContext _dataContext;
 
         public UnitOfWork(DataContext dataContext)
@@ -17,6 +18,7 @@ namespace ECommerce.Service
             _dataContext = dataContext;
             UserRepository = new UserRepository(_dataContext);
             OutgoingEmailRepository = new OutgoingEmailRepository(_dataContext);
+            CategoryRepository = new CategoryRepository(_dataContext);
         }
 
         public int Complete()
