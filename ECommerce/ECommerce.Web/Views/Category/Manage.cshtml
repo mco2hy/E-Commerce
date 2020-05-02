@@ -17,23 +17,21 @@
     <form class="kt-form kt-form--label-right">
         <div class="kt-portlet__body">
             <div class="form-group row">
-                <label for="ecategory-manage-categoryname" class="col-2 col-form-label">Kategori Adı</label>
+                <label for="category-manage-categoryname" class="col-2 col-form-label">Kategori Adı</label>
                 <div class="col-10">
                     <input class="form-control" type="text" value="" id="category-manage-categoryname">
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group row">
                 <label for="category-manage-menuid" class="col-2 col-form-label">Menü</label>
                 <div class="col-10">
-                    <select class="form-control" id="category-manage-menuid">
-                    </select>
+                    <select class="form-control" id="category-manage-menuid"></select>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group row">
                 <label for="category-manage-parentcategoryid" class="col-2 col-form-label">Ana Kategori</label>
                 <div class="col-10">
-                    <select class="form-control" id="category-manage-parentcategoryid">
-                    </select>
+                    <select class="form-control" id="category-manage-parentcategoryid"></select>
                 </div>
             </div>
         </div>
@@ -54,4 +52,4 @@
 
 <!--end::Portlet-->
 
-@Html.Raw(ECommerce.Helper.ViewHelper.PageJavascript(ViewContext, Model))
+@Html.Raw(ECommerce.Helper.ViewHelper.PageJavascript(ViewContext, Model)) 
