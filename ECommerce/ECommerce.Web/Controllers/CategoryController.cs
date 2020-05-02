@@ -1,6 +1,8 @@
 ﻿using ECommerce.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 
 namespace ECommerce.Web.Controllers
 {
@@ -30,15 +32,24 @@ namespace ECommerce.Web.Controllers
         public IActionResult Save([FromBody] Data.DTO.Category_Save_Request dto)
         {
             if (!ModelState.IsValid) return BadRequest("Kötü çocuk");
+            Data.Entities.Category category = null;
+            Data.Entities.Menu menu = null;
+            Data.Entities.Category parentCategory = null;
 
+            if (dto.MenuId != null)
+            {
+                menu = _unitOfWork.MenuRepository.Get((int)dto.MenuId);
+            }
+
+            if (dto.ParentCategoryId != null)
+            {
+                parentCategory = _unitOfWork.CategoryRepository.Get((int)dto.ParentCategoryId);
+            }
             if (dto.CategoryId == 0)
             {
                 //yeni kayıt
 
-                var menu = _unitOfWork.MenuRepository.Get(dto.MenuId);
-                var parentCategory = _unitOfWork.CategoryRepository.Get(dto.ParentCategoryId);
-
-                var category = new Data.Entities.Category()
+                category = new Data.Entities.Category()
                 {
                     Active = true,
                     CreateDate = DateTime.UtcNow,
@@ -46,14 +57,38 @@ namespace ECommerce.Web.Controllers
                     Name = dto.Name,
                     Parent = parentCategory
                 };
+
+                _unitOfWork.CategoryRepository.Insert(category);
+                _unitOfWork.Complete();
             }
             else
             {
                 //güncelleme
-                var category = _unitOfWork.CategoryRepository.Get(dto.CategoryId);
+                category = _unitOfWork.CategoryRepository
+                    .Query()
+                    .Include(a => a.Parent)
+                    .Include(a => a.Menu)
+                    .SingleOrDefault(a => a.Id == dto.CategoryId);
+
+                if (category == null) return BadRequest("Kaydetmeye çalıştığınız kategori bulunamadı.");
+
+                category.Name = dto.Name;
+                category.Menu = menu;
+                category.Parent = parentCategory;
+
+                _unitOfWork.CategoryRepository.Update(category);
+                _unitOfWork.Complete();
             }
 
             return new JsonResult(category);
+        }
+
+        [Route("/kategori/getir")]
+        public IActionResult GetAll()
+        {
+            var categories = _unitOfWork.CategoryRepository.List();
+
+            return new JsonResult(categories);
         }
     }
 }
