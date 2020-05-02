@@ -32,6 +32,15 @@
     },
     Fetch_Menu_Callback: function (result) {
         console.log(result);
+        var menuDom = $("#category-manage-menuid");
+
+        var html = "";
+        html += "<option value=\"0\">Menu Yok</option>"
+        for (var i = 0; i < result.length; i++) {
+            var menu = result[i];
+            tml += "<option value=\"" + menu.id +"\">" + menu.name + "</option>";
+        }
+        menuDom.html(html);
         Category_Manage.Fetch_Category();
     },
     Fetch_Category: function () {
@@ -46,6 +55,16 @@
     },
     Fetch_Category_Callback: function (result) {
         console.log(result);
+        var parentCategoryDom = $("#category-manage-parentcategoryid");
+
+        var html = "";
+        html += "<option value=\"0\">Kategori Yok</option>"
+        for (var i = 0; i < result.length; i++) {
+            var menu = result[i];
+            html += "<option value=\"" + parentCategory.id +"\">" + parentCategory.name + "</option>";
+        }
+        parentCategoryDom.html(html);
+
         Category_Manage.Fetch(Category_Manage.categoryId);
     },
     Save: function () {
