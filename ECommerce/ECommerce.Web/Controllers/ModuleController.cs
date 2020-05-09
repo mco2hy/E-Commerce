@@ -15,6 +15,7 @@ namespace ECommerce.Web.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        [FilterContext.Log]
         public IActionResult UserBar()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -30,6 +31,7 @@ namespace ECommerce.Web.Controllers
                 return Unauthorized();
             }
         }
+        [FilterContext.Log]
         public IActionResult AccountMenu()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
