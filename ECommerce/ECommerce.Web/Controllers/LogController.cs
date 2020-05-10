@@ -1,4 +1,5 @@
-﻿using ECommerce.Data.Interfaces;
+﻿using ECommerce.Data.Enum;
+using ECommerce.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace ECommerce.Web.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        [FilterContext.Log]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult Index()
         {
             return View();
@@ -19,6 +22,7 @@ namespace ECommerce.Web.Controllers
 
         [FilterContext.Log]
         [Route("/log/getir")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult GetAll()
         {
             var logs = _unitOfWork.LogRepository

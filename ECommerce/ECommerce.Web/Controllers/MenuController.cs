@@ -1,4 +1,5 @@
-﻿using ECommerce.Data.Interfaces;
+﻿using ECommerce.Data.Enum;
+using ECommerce.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Web.Controllers
@@ -12,6 +13,7 @@ namespace ECommerce.Web.Controllers
         }
 
         [Route("/menu/getir")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult Get()
         {
             var menus = _unitOfWork.MenuRepository.List();

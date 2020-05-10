@@ -1,4 +1,5 @@
-﻿using ECommerce.Data.Interfaces;
+﻿using ECommerce.Data.Enum;
+using ECommerce.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,12 +16,14 @@ namespace ECommerce.Web.Controllers
         }
         [FilterContext.Log]
         [Route("/yonetim/kategori/ekle/{id:int}")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult Manage(int id)
         {
             return View(id);
         }
         [FilterContext.Log]
         [Route("/kategori/getir/{id:int}")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult Get(int id)
         {
             var category = _unitOfWork.CategoryRepository.Get(id);
@@ -29,6 +32,7 @@ namespace ECommerce.Web.Controllers
         }
         [FilterContext.Log]
         [Route("/kategori/kaydet")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult Save([FromBody] Data.DTO.Category_Save_Request dto)
         {
             if (!ModelState.IsValid) return BadRequest("Kötü çocuk");
@@ -84,6 +88,7 @@ namespace ECommerce.Web.Controllers
         }
         [FilterContext.Log]
         [Route("/kategori/getir")]
+        [FilterContext.Auth(UserTitle.Administrator)]
         public IActionResult GetAll()
         {
             var categories = _unitOfWork.CategoryRepository.List();
